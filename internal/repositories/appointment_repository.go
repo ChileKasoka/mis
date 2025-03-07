@@ -12,7 +12,7 @@ import (
 )
 
 type AppointmentRepository interface {
-	FindAll() ([]models.Appointment, error)
+	FindAll(ctx context.Context) ([]models.Appointment, error)
 	FindById(id string) (*models.Appointment, error)
 	CreateAppointment(appointment models.Appointment) (models.Appointment, error)
 	CheckConfirmedAppointment(vendorID, timeSlotID uuid.UUID, date time.Time) (bool, error)
@@ -33,6 +33,7 @@ func (r *appointmentRepositoryImpl) CreateAppointment(appointment models.Appoint
 		VendorID:   appointment.VendorID,
 		Date:       appointment.Date,
 		TimeSlotID: appointment.TimeSlotID,
+		ServiceID:  appointment.ServiceID,
 		Status:     string(appointment.Status),
 	}
 
@@ -47,14 +48,15 @@ func (r *appointmentRepositoryImpl) CreateAppointment(appointment models.Appoint
 		VendorID:   createdAppointment.VendorID,
 		Date:       createdAppointment.Date,
 		TimeSlotID: createdAppointment.TimeSlotID,
+		ServiceID:  createdAppointment.ServiceID,
 		Status:     models.AppointmentStatus(createdAppointment.Status),
 	}
 
 	return result, nil
 }
 
-func (r *appointmentRepositoryImpl) FindAll() ([]models.Appointment, error) {
-	rows, err := r.Queries.GetAllAppointments(context.TODO())
+func (r *appointmentRepositoryImpl) FindAll(ctx context.Context) ([]models.Appointment, error) {
+	rows, err := r.Queries.GetAllAppointments(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -67,6 +69,7 @@ func (r *appointmentRepositoryImpl) FindAll() ([]models.Appointment, error) {
 			VendorID:   row.VendorID,
 			Date:       row.Date,
 			TimeSlotID: row.TimeSlotID,
+			ServiceID:  row.ServiceID,
 			Status:     models.AppointmentStatus(row.Status),
 		})
 	}
@@ -94,6 +97,7 @@ func (r *appointmentRepositoryImpl) FindById(id string) (*models.Appointment, er
 		VendorID:   appointment.VendorID,
 		Date:       appointment.Date,
 		TimeSlotID: appointment.TimeSlotID,
+		ServiceID:  appointment.ServiceID,
 		Status:     models.AppointmentStatus(appointment.Status),
 	}
 

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"errors"
 
 	models "github.com/ChileKasoka/mis/internal/models"
@@ -9,7 +10,7 @@ import (
 
 // AppointmentService defines the business logic layer for managing appointments
 type AppointmentService interface {
-	GetAllAppointments() ([]models.Appointment, error)
+	GetAllAppointments(ctx context.Context) ([]models.Appointment, error)
 	GetAppointmentByID(id string) (*models.Appointment, error)
 	CreateAppointment(appointment models.Appointment) (models.Appointment, error)
 }
@@ -42,8 +43,8 @@ func (s *appointmentServiceImpl) CreateAppointment(appointment models.Appointmen
 }
 
 // GetAllAppointments retrieves all appointments from the repository
-func (s *appointmentServiceImpl) GetAllAppointments() ([]models.Appointment, error) {
-	appointments, err := s.repository.FindAll()
+func (s *appointmentServiceImpl) GetAllAppointments(ctx context.Context) ([]models.Appointment, error) {
+	appointments, err := s.repository.FindAll(ctx)
 	if err != nil {
 		return nil, err
 	}

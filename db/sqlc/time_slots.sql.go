@@ -7,24 +7,23 @@ package db
 
 import (
 	"context"
-	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 const createTimeSlot = `-- name: CreateTimeSlot :one
-INSERT INTO time_slots (id, vendor_id, start_time, end_time, is_booked, buffer_time)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, vendor_id, start_time, end_time, is_booked, buffer_time
+INSERT INTO time_slots (id, vendor_id, start_time, end_time, is_booked, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+RETURNING id, vendor_id, start_time, end_time, is_booked, created_at, updated_at
 `
 
 type CreateTimeSlotParams struct {
-	ID         uuid.UUID     `json:"id"`
-	VendorID   uuid.NullUUID `json:"vendor_id"`
-	StartTime  sql.NullTime  `json:"start_time"`
-	EndTime    sql.NullTime  `json:"end_time"`
-	IsBooked   sql.NullBool  `json:"is_booked"`
-	BufferTime sql.NullInt64 `json:"buffer_time"`
+	ID        uuid.UUID `json:"id"`
+	VendorID  uuid.UUID `json:"vendor_id"`
+	StartTime time.Time `json:"start_time"`
+	EndTime   time.Time `json:"end_time"`
+	IsBooked  bool      `json:"is_booked"`
 }
 
 func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) (TimeSlot, error) {
@@ -34,7 +33,6 @@ func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) 
 		arg.StartTime,
 		arg.EndTime,
 		arg.IsBooked,
-		arg.BufferTime,
 	)
 	var i TimeSlot
 	err := row.Scan(
@@ -43,7 +41,8 @@ func (q *Queries) CreateTimeSlot(ctx context.Context, arg CreateTimeSlotParams) 
 		&i.StartTime,
 		&i.EndTime,
 		&i.IsBooked,
-		&i.BufferTime,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -61,7 +60,7 @@ func (q *Queries) DeleteTimeSlot(ctx context.Context, id uuid.UUID) (uuid.UUID, 
 }
 
 const getTimeSlot = `-- name: GetTimeSlot :one
-SELECT id, vendor_id, start_time, end_time, is_booked, buffer_time
+SELECT id, vendor_id, start_time, end_time, is_booked, created_at, updated_at
 FROM time_slots
 WHERE id = $1
 LIMIT 1
@@ -76,7 +75,8 @@ func (q *Queries) GetTimeSlot(ctx context.Context, id uuid.UUID) (TimeSlot, erro
 		&i.StartTime,
 		&i.EndTime,
 		&i.IsBooked,
-		&i.BufferTime,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -87,37 +87,44 @@ SET vendor_id = $2,
     start_time = $3,
     end_time = $4,
     is_booked = $5,
-    buffer_time = $6
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
-RETURNING id, vendor_id, start_time, end_time, is_booked, buffer_time
+RETURNING id, vendor_id, start_time, end_time, is_booked, updated_at
 `
 
 type UpdateTimeSlotParams struct {
-	ID         uuid.UUID     `json:"id"`
-	VendorID   uuid.NullUUID `json:"vendor_id"`
-	StartTime  sql.NullTime  `json:"start_time"`
-	EndTime    sql.NullTime  `json:"end_time"`
-	IsBooked   sql.NullBool  `json:"is_booked"`
-	BufferTime sql.NullInt64 `json:"buffer_time"`
+	ID        uuid.UUID `json:"id"`
+	VendorID  uuid.UUID `json:"vendor_id"`
+	StartTime time.Time `json:"start_time"`
+	EndTime   time.Time `json:"end_time"`
+	IsBooked  bool      `json:"is_booked"`
 }
 
-func (q *Queries) UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (TimeSlot, error) {
+type UpdateTimeSlotRow struct {
+	ID        uuid.UUID `json:"id"`
+	VendorID  uuid.UUID `json:"vendor_id"`
+	StartTime time.Time `json:"start_time"`
+	EndTime   time.Time `json:"end_time"`
+	IsBooked  bool      `json:"is_booked"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) UpdateTimeSlot(ctx context.Context, arg UpdateTimeSlotParams) (UpdateTimeSlotRow, error) {
 	row := q.db.QueryRowContext(ctx, updateTimeSlot,
 		arg.ID,
 		arg.VendorID,
 		arg.StartTime,
 		arg.EndTime,
 		arg.IsBooked,
-		arg.BufferTime,
 	)
-	var i TimeSlot
+	var i UpdateTimeSlotRow
 	err := row.Scan(
 		&i.ID,
 		&i.VendorID,
 		&i.StartTime,
 		&i.EndTime,
 		&i.IsBooked,
-		&i.BufferTime,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

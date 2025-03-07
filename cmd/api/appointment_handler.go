@@ -25,7 +25,10 @@ func (h *AppointmentHandler) RegisterRoutes(r chi.Router) {
 }
 
 func (h *AppointmentHandler) GetAllAppointments(w http.ResponseWriter, r *http.Request) {
-	appointments, err := h.appointmentService.GetAllAppointments()
+
+	ctx := r.Context()
+
+	appointments, err := h.appointmentService.GetAllAppointments(ctx)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

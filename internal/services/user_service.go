@@ -102,7 +102,7 @@ func (s *userServiceImpl) LoginService(email, password string) (string, string, 
 	}
 
 	// Set expiration time for access token
-	accessTokenExpirationTime := time.Now().Add(2 * time.Minute)
+	accessTokenExpirationTime := time.Now().Add(60 * time.Minute)
 	refreshTokenExpirationTime := time.Now().Add(60 * 24 * time.Hour)
 
 	// Set JWT claims for access token

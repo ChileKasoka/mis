@@ -17,18 +17,19 @@ type Appointment struct {
 	VendorID   uuid.UUID `json:"vendor_id"`
 	Date       time.Time `json:"date"`
 	TimeSlotID uuid.UUID `json:"time_slot_id"`
+	ServiceID  uuid.UUID `json:"service_id"`
 	Status     string    `json:"status"`
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
 }
 
 type Contact struct {
-	ID        uuid.UUID      `json:"id"`
-	UserID    uuid.UUID      `json:"user_id"`
-	Phone     sql.NullString `json:"phone"`
-	Address   sql.NullString `json:"address"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	ID        uuid.UUID `json:"id"`
+	UserID    uuid.UUID `json:"user_id"`
+	Phone     string    `json:"phone"`
+	Address   string    `json:"address"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Customer struct {
@@ -36,13 +37,27 @@ type Customer struct {
 	UserID uuid.NullUUID `json:"user_id"`
 }
 
+type DaysAvailable struct {
+	ID        uuid.UUID      `json:"id"`
+	Day       sql.NullString `json:"day"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+}
+
 type Feedback struct {
-	ID            uuid.UUID      `json:"id"`
-	AppointmentID uuid.NullUUID  `json:"appointment_id"`
-	Rating        sql.NullInt32  `json:"rating"`
-	Comment       sql.NullString `json:"comment"`
-	CreatedAt     time.Time      `json:"created_at"`
-	UpdatedAt     time.Time      `json:"updated_at"`
+	ID            uuid.UUID     `json:"id"`
+	AppointmentID uuid.NullUUID `json:"appointment_id"`
+	Rating        sql.NullInt32 `json:"rating"`
+	Comment       string        `json:"comment"`
+	CreatedAt     time.Time     `json:"created_at"`
+	UpdatedAt     time.Time     `json:"updated_at"`
+}
+
+type HoursAvailable struct {
+	ID        uuid.UUID      `json:"id"`
+	Hour      sql.NullString `json:"hour"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
 }
 
 type Payment struct {
@@ -60,23 +75,24 @@ type Payment struct {
 }
 
 type Service struct {
-	ID          uuid.UUID      `json:"id"`
-	VendorID    uuid.UUID      `json:"vendor_id"`
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	Price       sql.NullString `json:"price"`
-	Duration    sql.NullInt64  `json:"duration"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	VendorID    uuid.UUID `json:"vendor_id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Price       string    `json:"price"`
+	Duration    int32     `json:"duration"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type TimeSlot struct {
-	ID         uuid.UUID     `json:"id"`
-	VendorID   uuid.NullUUID `json:"vendor_id"`
-	StartTime  sql.NullTime  `json:"start_time"`
-	EndTime    sql.NullTime  `json:"end_time"`
-	IsBooked   sql.NullBool  `json:"is_booked"`
-	BufferTime sql.NullInt64 `json:"buffer_time"`
+	ID        uuid.UUID `json:"id"`
+	VendorID  uuid.UUID `json:"vendor_id"`
+	StartTime time.Time `json:"start_time"`
+	EndTime   time.Time `json:"end_time"`
+	IsBooked  bool      `json:"is_booked"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type User struct {
@@ -91,17 +107,20 @@ type User struct {
 
 type Vendor struct {
 	ID             uuid.UUID      `json:"id"`
-	UserID         uuid.NullUUID  `json:"user_id"`
+	FirstName      string         `json:"first_name"`
+	LastName       string         `json:"last_name"`
+	Email          string         `json:"email"`
+	Password       string         `json:"password"`
+	Phone          string         `json:"phone"`
+	Address        string         `json:"address"`
+	Location       sql.NullString `json:"location"`
+	Website        sql.NullString `json:"website"`
 	Biography      sql.NullString `json:"biography"`
 	ProfilePicture sql.NullString `json:"profile_picture"`
-	Active         sql.NullBool   `json:"active"`
+	BusinessType   string         `json:"business_type"`
+	Experience     sql.NullString `json:"experience"`
+	Certification  sql.NullString `json:"certification"`
+	Active         bool           `json:"active"`
 	CreatedAt      time.Time      `json:"created_at"`
 	UpdatedAt      time.Time      `json:"updated_at"`
-}
-
-type VendorAvailability struct {
-	ID        uuid.UUID    `json:"id"`
-	VendorID  uuid.UUID    `json:"vendor_id"`
-	DayOfWeek string       `json:"day_of_week"`
-	Date      sql.NullTime `json:"date"`
 }

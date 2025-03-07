@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,14 +19,14 @@ RETURNING id, vendor_id, name, description, price, duration, created_at, updated
 `
 
 type CreateServiceParams struct {
-	ID          uuid.UUID      `json:"id"`
-	VendorID    uuid.UUID      `json:"vendor_id"`
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	Price       sql.NullString `json:"price"`
-	Duration    sql.NullInt64  `json:"duration"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	VendorID    uuid.UUID `json:"vendor_id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Price       string    `json:"price"`
+	Duration    int32     `json:"duration"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (q *Queries) CreateService(ctx context.Context, arg CreateServiceParams) (Service, error) {
@@ -103,22 +102,22 @@ RETURNING id, vendor_id, name, description, price, duration, updated_at
 `
 
 type UpdateServiceParams struct {
-	ID          uuid.UUID      `json:"id"`
-	VendorID    uuid.UUID      `json:"vendor_id"`
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	Price       sql.NullString `json:"price"`
-	Duration    sql.NullInt64  `json:"duration"`
+	ID          uuid.UUID `json:"id"`
+	VendorID    uuid.UUID `json:"vendor_id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Price       string    `json:"price"`
+	Duration    int32     `json:"duration"`
 }
 
 type UpdateServiceRow struct {
-	ID          uuid.UUID      `json:"id"`
-	VendorID    uuid.UUID      `json:"vendor_id"`
-	Name        string         `json:"name"`
-	Description sql.NullString `json:"description"`
-	Price       sql.NullString `json:"price"`
-	Duration    sql.NullInt64  `json:"duration"`
-	UpdatedAt   time.Time      `json:"updated_at"`
+	ID          uuid.UUID `json:"id"`
+	VendorID    uuid.UUID `json:"vendor_id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Price       string    `json:"price"`
+	Duration    int32     `json:"duration"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 func (q *Queries) UpdateService(ctx context.Context, arg UpdateServiceParams) (UpdateServiceRow, error) {

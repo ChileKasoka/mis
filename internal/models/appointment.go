@@ -21,13 +21,13 @@ type Appointment struct {
 	VendorID   uuid.UUID         `json:"vendor_id"`
 	Date       time.Time         `json:"date"`
 	TimeSlotID uuid.UUID         `json:"time_slot_id"`
+	ServiceID  uuid.UUID         `json:"service_id"`
 	Status     AppointmentStatus `json:"status"`
 	CreatedAt  time.Time         `json:"created_at"`
 	UpdatedAt  time.Time         `json:"updated_at"`
 }
 
-// NewAppointment initializes a new Appointment with the provided values.
-func NewAppointment(customerID, vendorID, timeSlotID uuid.UUID, date time.Time, status AppointmentStatus) *Appointment {
+func NewAppointment(customerID, vendorID, timeSlotID uuid.UUID, date time.Time, status AppointmentStatus, serviceId uuid.UUID) *Appointment {
 	// Default to "pending" status if none provided
 	if status == "" {
 		status = StatusPending
@@ -39,6 +39,7 @@ func NewAppointment(customerID, vendorID, timeSlotID uuid.UUID, date time.Time, 
 		VendorID:   vendorID,
 		Date:       date,
 		TimeSlotID: timeSlotID,
+		ServiceID:  serviceId,
 		Status:     status,
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),

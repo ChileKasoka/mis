@@ -1,17 +1,3 @@
--- Step 1: Create necessary enum types
-DO $$ BEGIN
-    CREATE TYPE payment_status_enum AS ENUM ('pending', 'completed', 'failed');
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
-DO $$ BEGIN
-    CREATE TYPE payment_method_enum AS ENUM ('credit_card', 'paypal', 'bank_transfer');
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Continue with table creation
 -- Step 1: Create the users table
 CREATE TABLE "users" (
     "id" uuid PRIMARY KEY,             -- Unique identifier for each user
@@ -27,20 +13,43 @@ CREATE TABLE "users" (
 CREATE TABLE "contacts" (
   "id" uuid PRIMARY KEY,
   "user_id" uuid NOT NULL,
-  "phone" varchar UNIQUE,
-  "address" varchar,
+  "phone" varchar UNIQUE NOT NULL,
+  "address" varchar NOT NULL,
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP 
 );
 
 CREATE TABLE "vendors" (
   "id" uuid PRIMARY KEY,
-  "user_id" uuid,
-  "biography" text,
-  "profile_picture" varchar,
-  "active" bool DEFAULT false,
+  "first_name" varchar NOT NULL,
+  "last_name" varchar NOT NULL,
+  "email" varchar NOT NULL,
+  "password" varchar NOT NULL,
+  "phone" varchar NOT NULL,
+  "address" varchar NOT NULL,
+  "location" varchar ,
+  "website" varchar ,
+  "biography" varchar ,
+  "profile_picture" varchar ,
+  "business_type" varchar NOT NULL,
+  "experience" varchar ,
+  "certification" varchar ,
+  "active" bool NOT NULL DEFAULT false,
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP 
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE days_available (
+    "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    "vendor_id" UUID REFERENCES vendors(id) ON DELETE CASCADE,
+    "day" TEXT NOT NULL CHECK (day IN ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
+);
+
+CREATE TABLE "hours_available" (
+  "id" uuid PRIMARY KEY,
+  "hour" varchar,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE "customers" (
@@ -52,34 +61,29 @@ CREATE TABLE "appointments" (
   "id" uuid PRIMARY KEY,
   "customer_id" uuid NOT NULL,
   "vendor_id" uuid NOT NULL,
-  "date" TIMESTAMP(3) NOT NULL,
+  "date" date NOT NULL,
   "time_slot_id" uuid NOT NULL,
-  "status" varchar NOT NULL,
+  "service_id" uuid NOT NULL,
+  "status" varchar NOT NULL, -- Assuming AppointmentStatus is an enum
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP 
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE "time_slots" (
   "id" uuid PRIMARY KEY,
-  "vendor_id" uuid,
-  "start_time" timestamp,
-  "end_time" timestamp,
-  "is_booked" boolean,
-  "buffer_time" interval
-);
-
-CREATE TABLE "vendor_availability" (
-  "id" uuid PRIMARY KEY,
   "vendor_id" uuid NOT NULL,
-  "day_of_week" varchar NOT NULL,
-  "date" date
+  "start_time" timestamp NOT NULL,
+  "end_time" timestamp NOT NULL,
+  "is_booked" boolean NOT NULL,
+  "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP 
 );
 
 CREATE TABLE "feedback" (
   "id" uuid PRIMARY KEY,
   "appointment_id" uuid,
   "rating" int,
-  "comment" text,
+  "comment" varchar NOT NULL,
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP 
 );
@@ -88,11 +92,11 @@ CREATE TABLE "services" (
   "id" uuid PRIMARY KEY,
   "vendor_id" uuid NOT NULL,
   "name" varchar NOT NULL,
-  "description" text,
-  "price" decimal(10,2),
-  "duration" interval,
+  "description" varchar NOT NULL,
+  "price" numeric NOT NULL,
+  "duration" int NOT NULL, -- Duration in minutes
   "created_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP 
+  "updated_at" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE "payments" (
@@ -124,14 +128,14 @@ ALTER TABLE "appointments" ADD FOREIGN KEY ("time_slot_id") REFERENCES "time_slo
 
 ALTER TABLE "time_slots" ADD FOREIGN KEY ("vendor_id") REFERENCES "vendors" ("id");
 
-ALTER TABLE "vendor_availability" ADD FOREIGN KEY ("vendor_id") REFERENCES "vendors" ("id");
+-- ALTER TABLE "vendor_availability" ADD FOREIGN KEY ("vendor_id") REFERENCES "vendors" ("id");
 
 ALTER TABLE "feedback" ADD FOREIGN KEY ("appointment_id") REFERENCES "appointments" ("id");
 
 ALTER TABLE "services" ADD FOREIGN KEY ("vendor_id") REFERENCES "vendors" ("id");
 
-ALTER TABLE "payments" ADD FOREIGN KEY ("appointment_id") REFERENCES "appointments" ("id");
+-- ALTER TABLE "payments" ADD FOREIGN KEY ("appointment_id") REFERENCES "appointments" ("id");
 
-ALTER TABLE "payments" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("id");
+-- ALTER TABLE "payments" ADD FOREIGN KEY ("customer_id") REFERENCES "customers" ("id");
 
-ALTER TABLE "payments" ADD FOREIGN KEY ("vendor_id") REFERENCES "vendors" ("id");
+-- ALTER TABLE "payments" ADD FOREIGN KEY ("vendor_id") REFERENCES "vendors" ("id");

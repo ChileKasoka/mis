@@ -19,17 +19,17 @@ RETURNING id, appointment_id, rating, comment
 `
 
 type CreateFeedbackParams struct {
-	ID            uuid.UUID      `json:"id"`
-	AppointmentID uuid.NullUUID  `json:"appointment_id"`
-	Rating        sql.NullInt32  `json:"rating"`
-	Comment       sql.NullString `json:"comment"`
+	ID            uuid.UUID     `json:"id"`
+	AppointmentID uuid.NullUUID `json:"appointment_id"`
+	Rating        sql.NullInt32 `json:"rating"`
+	Comment       string        `json:"comment"`
 }
 
 type CreateFeedbackRow struct {
-	ID            uuid.UUID      `json:"id"`
-	AppointmentID uuid.NullUUID  `json:"appointment_id"`
-	Rating        sql.NullInt32  `json:"rating"`
-	Comment       sql.NullString `json:"comment"`
+	ID            uuid.UUID     `json:"id"`
+	AppointmentID uuid.NullUUID `json:"appointment_id"`
+	Rating        sql.NullInt32 `json:"rating"`
+	Comment       string        `json:"comment"`
 }
 
 func (q *Queries) CreateFeedback(ctx context.Context, arg CreateFeedbackParams) (CreateFeedbackRow, error) {
@@ -69,10 +69,10 @@ LIMIT 1
 `
 
 type GetFeedbackRow struct {
-	ID            uuid.UUID      `json:"id"`
-	AppointmentID uuid.NullUUID  `json:"appointment_id"`
-	Rating        sql.NullInt32  `json:"rating"`
-	Comment       sql.NullString `json:"comment"`
+	ID            uuid.UUID     `json:"id"`
+	AppointmentID uuid.NullUUID `json:"appointment_id"`
+	Rating        sql.NullInt32 `json:"rating"`
+	Comment       string        `json:"comment"`
 }
 
 func (q *Queries) GetFeedback(ctx context.Context, id uuid.UUID) (GetFeedbackRow, error) {
@@ -97,17 +97,17 @@ RETURNING id, appointment_id, rating, comment
 `
 
 type UpdateFeedbackParams struct {
-	ID            uuid.UUID      `json:"id"`
-	AppointmentID uuid.NullUUID  `json:"appointment_id"`
-	Rating        sql.NullInt32  `json:"rating"`
-	Comment       sql.NullString `json:"comment"`
+	ID            uuid.UUID     `json:"id"`
+	AppointmentID uuid.NullUUID `json:"appointment_id"`
+	Rating        sql.NullInt32 `json:"rating"`
+	Comment       string        `json:"comment"`
 }
 
 type UpdateFeedbackRow struct {
-	ID            uuid.UUID      `json:"id"`
-	AppointmentID uuid.NullUUID  `json:"appointment_id"`
-	Rating        sql.NullInt32  `json:"rating"`
-	Comment       sql.NullString `json:"comment"`
+	ID            uuid.UUID     `json:"id"`
+	AppointmentID uuid.NullUUID `json:"appointment_id"`
+	Rating        sql.NullInt32 `json:"rating"`
+	Comment       string        `json:"comment"`
 }
 
 func (q *Queries) UpdateFeedback(ctx context.Context, arg UpdateFeedbackParams) (UpdateFeedbackRow, error) {

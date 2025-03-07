@@ -8,47 +8,76 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
 
 const createVendor = `-- name: CreateVendor :one
-INSERT INTO vendors (id, user_id, biography, profile_picture, active)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, user_id, biography, profile_picture, active
+INSERT INTO vendors (id, first_name, last_name, email, password, phone, address, location, website, biography, profile_picture, business_type, experience, certification, active, created_at, updated_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+RETURNING id, first_name, last_name, email, password, phone, address, location, website, biography, profile_picture, business_type, experience, certification, active, created_at, updated_at
 `
 
 type CreateVendorParams struct {
 	ID             uuid.UUID      `json:"id"`
-	UserID         uuid.NullUUID  `json:"user_id"`
+	FirstName      string         `json:"first_name"`
+	LastName       string         `json:"last_name"`
+	Email          string         `json:"email"`
+	Password       string         `json:"password"`
+	Phone          string         `json:"phone"`
+	Address        string         `json:"address"`
+	Location       sql.NullString `json:"location"`
+	Website        sql.NullString `json:"website"`
 	Biography      sql.NullString `json:"biography"`
 	ProfilePicture sql.NullString `json:"profile_picture"`
-	Active         sql.NullBool   `json:"active"`
+	BusinessType   string         `json:"business_type"`
+	Experience     sql.NullString `json:"experience"`
+	Certification  sql.NullString `json:"certification"`
+	Active         bool           `json:"active"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
 }
 
-type CreateVendorRow struct {
-	ID             uuid.UUID      `json:"id"`
-	UserID         uuid.NullUUID  `json:"user_id"`
-	Biography      sql.NullString `json:"biography"`
-	ProfilePicture sql.NullString `json:"profile_picture"`
-	Active         sql.NullBool   `json:"active"`
-}
-
-func (q *Queries) CreateVendor(ctx context.Context, arg CreateVendorParams) (CreateVendorRow, error) {
+func (q *Queries) CreateVendor(ctx context.Context, arg CreateVendorParams) (Vendor, error) {
 	row := q.db.QueryRowContext(ctx, createVendor,
 		arg.ID,
-		arg.UserID,
+		arg.FirstName,
+		arg.LastName,
+		arg.Email,
+		arg.Password,
+		arg.Phone,
+		arg.Address,
+		arg.Location,
+		arg.Website,
 		arg.Biography,
 		arg.ProfilePicture,
+		arg.BusinessType,
+		arg.Experience,
+		arg.Certification,
 		arg.Active,
+		arg.CreatedAt,
+		arg.UpdatedAt,
 	)
-	var i CreateVendorRow
+	var i Vendor
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Password,
+		&i.Phone,
+		&i.Address,
+		&i.Location,
+		&i.Website,
 		&i.Biography,
 		&i.ProfilePicture,
+		&i.BusinessType,
+		&i.Experience,
+		&i.Certification,
 		&i.Active,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
@@ -66,71 +95,115 @@ func (q *Queries) DeleteVendor(ctx context.Context, id uuid.UUID) (uuid.UUID, er
 }
 
 const getVendor = `-- name: GetVendor :one
-SELECT id, user_id, biography, profile_picture, active
+SELECT id, first_name, last_name, email, password, phone, address, location, website, biography, profile_picture, business_type, experience, certification, active, created_at, updated_at
 FROM vendors
 WHERE id = $1
 LIMIT 1
 `
 
-type GetVendorRow struct {
-	ID             uuid.UUID      `json:"id"`
-	UserID         uuid.NullUUID  `json:"user_id"`
-	Biography      sql.NullString `json:"biography"`
-	ProfilePicture sql.NullString `json:"profile_picture"`
-	Active         sql.NullBool   `json:"active"`
-}
-
-func (q *Queries) GetVendor(ctx context.Context, id uuid.UUID) (GetVendorRow, error) {
+func (q *Queries) GetVendor(ctx context.Context, id uuid.UUID) (Vendor, error) {
 	row := q.db.QueryRowContext(ctx, getVendor, id)
-	var i GetVendorRow
+	var i Vendor
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Password,
+		&i.Phone,
+		&i.Address,
+		&i.Location,
+		&i.Website,
 		&i.Biography,
 		&i.ProfilePicture,
+		&i.BusinessType,
+		&i.Experience,
+		&i.Certification,
 		&i.Active,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const updateVendor = `-- name: UpdateVendor :one
 UPDATE vendors
-SET biography = $2,
-    profile_picture = $3,
-    active = $4
+SET first_name = $2,
+    last_name = $3,
+    email = $4,
+    password = $5,
+    phone = $6,
+    address = $7,
+    location = $8,
+    website = $9,
+    biography = $10,
+    profile_picture = $11,
+    business_type = $12,
+    experience = $13,
+    certification = $14,
+    active = $15,
+    updated_at = $16
 WHERE id = $1
-RETURNING id, user_id, biography, profile_picture, active
+RETURNING id, first_name, last_name, email, password, phone, address, location, website, biography, profile_picture, business_type, experience, certification, active, created_at, updated_at
 `
 
 type UpdateVendorParams struct {
 	ID             uuid.UUID      `json:"id"`
+	FirstName      string         `json:"first_name"`
+	LastName       string         `json:"last_name"`
+	Email          string         `json:"email"`
+	Password       string         `json:"password"`
+	Phone          string         `json:"phone"`
+	Address        string         `json:"address"`
+	Location       sql.NullString `json:"location"`
+	Website        sql.NullString `json:"website"`
 	Biography      sql.NullString `json:"biography"`
 	ProfilePicture sql.NullString `json:"profile_picture"`
-	Active         sql.NullBool   `json:"active"`
+	BusinessType   string         `json:"business_type"`
+	Experience     sql.NullString `json:"experience"`
+	Certification  sql.NullString `json:"certification"`
+	Active         bool           `json:"active"`
+	UpdatedAt      time.Time      `json:"updated_at"`
 }
 
-type UpdateVendorRow struct {
-	ID             uuid.UUID      `json:"id"`
-	UserID         uuid.NullUUID  `json:"user_id"`
-	Biography      sql.NullString `json:"biography"`
-	ProfilePicture sql.NullString `json:"profile_picture"`
-	Active         sql.NullBool   `json:"active"`
-}
-
-func (q *Queries) UpdateVendor(ctx context.Context, arg UpdateVendorParams) (UpdateVendorRow, error) {
+func (q *Queries) UpdateVendor(ctx context.Context, arg UpdateVendorParams) (Vendor, error) {
 	row := q.db.QueryRowContext(ctx, updateVendor,
 		arg.ID,
+		arg.FirstName,
+		arg.LastName,
+		arg.Email,
+		arg.Password,
+		arg.Phone,
+		arg.Address,
+		arg.Location,
+		arg.Website,
 		arg.Biography,
 		arg.ProfilePicture,
+		arg.BusinessType,
+		arg.Experience,
+		arg.Certification,
 		arg.Active,
+		arg.UpdatedAt,
 	)
-	var i UpdateVendorRow
+	var i Vendor
 	err := row.Scan(
 		&i.ID,
-		&i.UserID,
+		&i.FirstName,
+		&i.LastName,
+		&i.Email,
+		&i.Password,
+		&i.Phone,
+		&i.Address,
+		&i.Location,
+		&i.Website,
 		&i.Biography,
 		&i.ProfilePicture,
+		&i.BusinessType,
+		&i.Experience,
+		&i.Certification,
 		&i.Active,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }

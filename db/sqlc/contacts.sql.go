@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -19,17 +18,17 @@ RETURNING id, user_id, phone, address
 `
 
 type CreateContactParams struct {
-	ID      uuid.UUID      `json:"id"`
-	UserID  uuid.UUID      `json:"user_id"`
-	Phone   sql.NullString `json:"phone"`
-	Address sql.NullString `json:"address"`
+	ID      uuid.UUID `json:"id"`
+	UserID  uuid.UUID `json:"user_id"`
+	Phone   string    `json:"phone"`
+	Address string    `json:"address"`
 }
 
 type CreateContactRow struct {
-	ID      uuid.UUID      `json:"id"`
-	UserID  uuid.UUID      `json:"user_id"`
-	Phone   sql.NullString `json:"phone"`
-	Address sql.NullString `json:"address"`
+	ID      uuid.UUID `json:"id"`
+	UserID  uuid.UUID `json:"user_id"`
+	Phone   string    `json:"phone"`
+	Address string    `json:"address"`
 }
 
 func (q *Queries) CreateContact(ctx context.Context, arg CreateContactParams) (CreateContactRow, error) {
@@ -69,10 +68,10 @@ LIMIT 1
 `
 
 type GetContactRow struct {
-	ID      uuid.UUID      `json:"id"`
-	UserID  uuid.UUID      `json:"user_id"`
-	Phone   sql.NullString `json:"phone"`
-	Address sql.NullString `json:"address"`
+	ID      uuid.UUID `json:"id"`
+	UserID  uuid.UUID `json:"user_id"`
+	Phone   string    `json:"phone"`
+	Address string    `json:"address"`
 }
 
 func (q *Queries) GetContact(ctx context.Context, id uuid.UUID) (GetContactRow, error) {
@@ -96,16 +95,16 @@ RETURNING id, user_id, phone, address
 `
 
 type UpdateContactParams struct {
-	ID      uuid.UUID      `json:"id"`
-	Phone   sql.NullString `json:"phone"`
-	Address sql.NullString `json:"address"`
+	ID      uuid.UUID `json:"id"`
+	Phone   string    `json:"phone"`
+	Address string    `json:"address"`
 }
 
 type UpdateContactRow struct {
-	ID      uuid.UUID      `json:"id"`
-	UserID  uuid.UUID      `json:"user_id"`
-	Phone   sql.NullString `json:"phone"`
-	Address sql.NullString `json:"address"`
+	ID      uuid.UUID `json:"id"`
+	UserID  uuid.UUID `json:"user_id"`
+	Phone   string    `json:"phone"`
+	Address string    `json:"address"`
 }
 
 func (q *Queries) UpdateContact(ctx context.Context, arg UpdateContactParams) (UpdateContactRow, error) {
